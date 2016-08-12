@@ -1,6 +1,8 @@
 package com.mhy.netty.netty.server;
 
 import com.mhy.netty.server.HttpHandler;
+import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
 
 import java.util.Map;
 

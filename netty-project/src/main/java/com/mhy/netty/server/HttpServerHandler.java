@@ -7,6 +7,7 @@ import com.mhy.netty.client.RpcResponseCallback;
 import com.mhy.netty.client.TransportClient;
 import com.mhy.netty.protocol.Message;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.*;
 
@@ -38,7 +40,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
         if(msg instanceof HttpRequest){
-            ReferenceCountUtil.release(msg);
             HttpRequest request = (HttpRequest) msg;
             if (request == null) return;
             Map<String,String> map = null;
@@ -57,16 +58,23 @@ public class HttpServerHandler extends SimpleChannelInboundHandler {
     protected void processOneMessage(ChannelHandlerContext ctx, HttpRequest request, Map<String, String> map)  {
         // Decide whether to close the connection or not.
         boolean keepAlive = HttpHeaders.isKeepAlive(request);
-
         Object handlerResult = null;
+
         try {
             handlerResult = rpcHandler.receive(map);
         } catch (Exception rpc_e) {
             LOG.error("process request err !",rpc_e);
             return;
         }
+        byte[] ret = null;
+        try {
+            ret = handlerResult.toString().getBytes("utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         ByteBuf buf = Unpooled.copiedBuffer(handlerResult.toString(), CharsetUtil.UTF_8);
         DefaultFullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK,buf);
+
         response.headers().set(HttpHeaders.Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
         response.headers().set("Access-Control-Allow-Origin", "*");
         response.headers().set(HttpHeaders.Names.CONTENT_LENGTH, buf.readableBytes());

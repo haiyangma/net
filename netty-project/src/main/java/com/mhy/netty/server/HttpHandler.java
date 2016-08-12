@@ -2,6 +2,7 @@ package com.mhy.netty.server;
 
 import com.mhy.netty.client.RpcResponseCallback;
 import com.mhy.netty.client.TransportClient;
+import io.netty.handler.codec.http.HttpResponse;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
