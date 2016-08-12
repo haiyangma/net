@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
+    <!-- ????  appender?? -->
+    <appender name="LOGFILE" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="${log.output}/logs/info.log" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %p [%t] %C.%M(%L) | %m%n" />
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="INFO" />
+            <param name="LevelMax" value="INFO" />
+        </filter>
+    </appender>
+    <!-- ??????  -->
+    <appender name="LOGFILE-ERROR" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="${log.output}/logs/error.log" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[QC] %d %p [%t] %C.%M(%L) | %m%n" />
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="WARN" />
+            <param name="LevelMax" value="ERROR" />
+        </filter>
+    </appender>
+
+    <!-- ????appender?? -->
+    <appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
+        <param name="Threshold" value="INFO"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[QC] %d %p [%t] %C.%M(%L) | %m%n" />
+        </layout>
+    </appender>
+
+    <!-- ???url  -->
+    <appender name="LOGFILE-URL" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="${log.output}/logs/url.log" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[QC] --- %m%n" />
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="INFO" />
+            <param name="LevelMax" value="INFO" />
+        </filter>
+    </appender>
+
+    <!-- ??????  -->
+    <logger name="com.sohu.mrd.front" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="LOGFILE"/>
+        <appender-ref ref="LOGFILE-ERROR" />
+    </logger>
+
+
+    <!-- ?????INFO??  -->
+    <root>
+        <level value="INFO" />
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="LOGFILE" />
+        <appender-ref ref="LOGFILE-ERROR" />
+    </root>
+</log4j:configuration>

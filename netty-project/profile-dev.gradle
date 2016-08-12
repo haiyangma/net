@@ -1,0 +1,8 @@
+version = '1.0'
+
+def env = System.getProperty("env") ?: "dev"
+
+apply from: "profile-${env}.gradle"
+
+
+
