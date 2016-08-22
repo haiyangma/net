@@ -14,6 +14,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by root on 16-8-11.
@@ -24,6 +25,17 @@ public class TestServer {
         TransportConf conf = new TransportConf("test",new MapConfigProvider(new HashMap()));
         TransportContext context = new TransportContext(conf,new MyHttpHandler(),true);
         TransportServer server =  context.createHttpServer(56666);
+        server.sync();
+    }
+
+    @Test
+    public void createNewHttpServer() throws Exception{
+        Map map = new HashMap();
+        map.put("springXml","spring.xml");
+        map.put("actionPath","com.mhy.netty.action");
+        TransportConf conf = new TransportConf("test",new MapConfigProvider(map));
+        TransportContext context = new TransportContext(conf,true);
+        TransportServer server =  context.createNewHttpServer(56666);
         server.sync();
     }
 

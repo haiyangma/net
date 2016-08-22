@@ -18,6 +18,10 @@
 package com.mhy.netty.server;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.mhy.netty.http.Configuration;
+import com.mhy.netty.http.Controller;
+import com.mhy.netty.http.DefaultProxyFactory;
+import com.mhy.netty.http.ProxyFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
@@ -30,8 +34,11 @@ import com.mhy.netty.util.IOMode;
 import com.mhy.netty.util.JavaUtils;
 import com.mhy.netty.util.NettyUtils;
 import com.mhy.netty.util.TransportConf;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.Closeable;
 import java.net.InetSocketAddress;
@@ -53,6 +60,7 @@ public class TransportServer implements Closeable {
   private ChannelFuture channelFuture;
   private int port = -1;
   private TransportConf.ServerType serverType = TransportConf.ServerType.SOCKETCHANNELSERVER;
+  private Controller controller;
 
   /**
    * Creates a TransportServer that binds to the given host and the given port, or to any available
@@ -70,6 +78,43 @@ public class TransportServer implements Closeable {
     this.appRpcHandler = appRpcHandler;
     this.bootstraps = Lists.newArrayList(Preconditions.checkNotNull(bootstraps));
     this.serverType = serverType;
+    try {
+      init(hostToBind, portToBind);
+    } catch (RuntimeException e) {
+      JavaUtils.closeQuietly(this);
+      throw e;
+    }
+  }
+
+
+  public TransportServer(
+          TransportContext context,
+          String hostToBind,
+          int portToBind,
+          RpcHandler appRpcHandler,
+          List<TransportServerBootstrap> bootstraps,
+          TransportConf.ServerType serverType,
+          String springXml,
+          List<String> packages
+          ) {
+    this.context = context;
+    this.conf = context.getConf();
+    this.appRpcHandler = appRpcHandler;
+    this.bootstraps = Lists.newArrayList(Preconditions.checkNotNull(bootstraps));
+    this.serverType = serverType;
+    Configuration configuration = new Configuration();
+    if(StringUtils.isNotBlank(springXml)){
+      final ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springXml);
+      controller = configuration.build(new ProxyFactory() {
+        @Override
+        public <T> T getObject(Class<T> tClass) {
+          return (T)applicationContext.getBean(tClass);
+        }
+      },packages);
+    }else{
+      controller = configuration.build(new DefaultProxyFactory()
+      ,packages);
+    }
     try {
       init(hostToBind, portToBind);
     } catch (RuntimeException e) {
@@ -120,7 +165,11 @@ public class TransportServer implements Closeable {
         for (TransportServerBootstrap bootstrap : bootstraps) {
           rpcHandler = bootstrap.doBootstrap(ch, rpcHandler);
         }
-        context.initializePipeline(ch, serverType);
+        if(serverType == TransportConf.ServerType.HTTPSERVER){
+          context.initializeNewHttpPipeline(ch,controller);
+        }else{
+          context.initializePipeline(ch);
+        }
       }
     });
 

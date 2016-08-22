@@ -12,11 +12,22 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="netty-project_main" />
     <orderEntry type="library" name="Gradle: io.netty:netty-all:4.0.29.Final" level="project" />
+    <orderEntry type="library" name="Gradle: org.ow2.asm:asm:5.0.3" level="project" />
+    <orderEntry type="library" name="Gradle: com.esotericsoftware.reflectasm:reflectasm:1.09" level="project" />
     <orderEntry type="library" name="Gradle: ch.qos.logback:logback-classic:1.1.7" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.commons:commons-lang3:3.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework:spring-core:3.2.3.RELEASE" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework:spring-beans:3.2.3.RELEASE" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework:spring-context:3.2.3.RELEASE" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework:spring-context-support:3.2.3.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: com.google.guava:guava:14.0.1" level="project" />
     <orderEntry type="library" name="Gradle: junit:junit:4.11" level="project" />
     <orderEntry type="library" name="Gradle: ch.qos.logback:logback-core:1.1.7" level="project" />
+    <orderEntry type="library" name="Gradle: commons-logging:commons-logging:1.1.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework:spring-aop:3.2.3.RELEASE" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework:spring-expression:3.2.3.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.hamcrest:hamcrest-core:1.3" level="project" />
+    <orderEntry type="library" name="Gradle: aopalliance:aopalliance:1.0" level="project" />
     <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.20" level="project" />
   </component>
   <component name="TestModuleProperties" production-module="netty-project_main" />

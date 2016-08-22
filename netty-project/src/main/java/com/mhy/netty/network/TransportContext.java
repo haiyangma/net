@@ -18,6 +18,7 @@
 package com.mhy.netty.network;
 
 import com.google.common.collect.Lists;
+import com.mhy.netty.http.Controller;
 import com.mhy.netty.server.HttpHandler;
 import com.mhy.netty.server.HttpServerHandler;
 import io.netty.channel.Channel;
@@ -36,6 +37,7 @@ import com.mhy.netty.server.*;
 import com.mhy.netty.util.NettyUtils;
 import com.mhy.netty.util.TransportConf;
 import com.mhy.netty.util.TransportFrameDecoder;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,11 +60,11 @@ public class TransportContext {
   private final Logger logger = LoggerFactory.getLogger(TransportContext.class);
 
   private final TransportConf conf;
-  private final RpcHandler rpcHandler;
+  private RpcHandler rpcHandler = null;
   private final boolean closeIdleConnections;
 
-  private final MessageEncoder encoder;
-  private final MessageDecoder decoder;
+  private MessageEncoder encoder = null;
+  private MessageDecoder decoder = null;
 
   public TransportContext(TransportConf conf, RpcHandler rpcHandler) {
     this(conf, rpcHandler, false);
@@ -78,6 +80,18 @@ public class TransportContext {
     this.decoder = new MessageDecoder();
     this.closeIdleConnections = closeIdleConnections;
   }
+
+    /**
+     * create http server
+     * @param conf
+     * @param closeIdleConnections
+     */
+    public TransportContext(
+            TransportConf conf,
+            boolean closeIdleConnections) {
+        this.conf = conf;
+        this.closeIdleConnections = closeIdleConnections;
+    }
 
   /**
    * Initializes a ClientFactory which runs the given TransportClientBootstraps prior to returning
@@ -99,6 +113,20 @@ public class TransportContext {
   public TransportServer createServer(int port, List<TransportServerBootstrap> bootstraps, TransportConf.ServerType type) {
     return new TransportServer(this, null, port, rpcHandler, bootstraps,type);
   }
+
+    public TransportServer createHttpServer(int port,
+                                        List<TransportServerBootstrap> bootstraps,
+                                        TransportConf.ServerType type
+    ) {
+        String packageStr = conf.actionpath();
+        String springXml = conf.springXml();
+        if(StringUtils.isBlank(packageStr) || StringUtils.isBlank(springXml)){
+            logger.error("you must special the config in the conf provider by key 'actionPath:(value splited by comma)'  and 'springXml'");
+            System.exit(1);
+        }
+        List<String> actionPaths = Lists.newArrayList(packageStr.split(","));
+        return new TransportServer(this, null, port, rpcHandler, bootstraps,type,springXml,actionPaths);
+    }
   /** Create a server which will attempt to bind to a specific host and port. */
   public TransportServer createServer(
       String host, int port, List<TransportServerBootstrap> bootstraps) {
@@ -116,6 +144,10 @@ public class TransportContext {
   public TransportServer createHttpServer(int port) {
     return createServer(port, Lists.<TransportServerBootstrap>newArrayList(), TransportConf.ServerType.HTTPSERVER);
   }
+
+    public TransportServer createNewHttpServer(int port) {
+        return createHttpServer(port, Lists.<TransportServerBootstrap>newArrayList(), TransportConf.ServerType.HTTPSERVER);
+    }
 
 
   public TransportServer createServer() {
@@ -176,6 +208,23 @@ public class TransportContext {
                     .addLast("aggregator", new HttpObjectAggregator(1048576))
                     .addLast("encoder", new HttpResponseEncoder())
                     .addLast("idleStateHandler", new IdleStateHandler(0, 0, conf.connectionTimeoutMs() / 1000))
+                    .addLast("handler", serverHandler);
+            return serverHandler;
+        } catch (RuntimeException e) {
+            logger.error("Error while initializing Netty pipeline", e);
+            throw e;
+        }
+    }
+
+    public com.mhy.netty.http.HttpServerHandler initializeNewHttpPipeline(
+            SocketChannel channel,
+            Controller controller) {
+        try {
+            com.mhy.netty.http.HttpServerHandler serverHandler = new com.mhy.netty.http.HttpServerHandler(controller);
+            channel.pipeline()
+                    .addLast("http-decoder",new HttpRequestDecoder())
+                    .addLast("aggregator", new HttpObjectAggregator(1048576))
+                    .addLast("encoder", new HttpResponseEncoder())
                     .addLast("handler", serverHandler);
             return serverHandler;
         } catch (RuntimeException e) {

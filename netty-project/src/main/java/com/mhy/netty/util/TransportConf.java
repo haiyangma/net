@@ -19,6 +19,8 @@ package com.mhy.netty.util;
 
 import com.google.common.primitives.Ints;
 
+import java.util.List;
+
 /**
  * A central location that tracks all the settings we expose to users.
  */
@@ -37,6 +39,8 @@ public class TransportConf {
   private final String SPARK_NETWORK_IO_MAXRETRIES_KEY;
   private final String SPARK_NETWORK_IO_RETRYWAIT_KEY;
   private final String SPARK_NETWORK_IO_LAZYFD_KEY;
+  private final String SPRINGXML;
+  private final String ACTIONPATH;
 
   private final ConfigProvider conf;
 
@@ -58,7 +62,18 @@ public class TransportConf {
     SPARK_NETWORK_IO_MAXRETRIES_KEY = getConfKey("io.maxRetries");
     SPARK_NETWORK_IO_RETRYWAIT_KEY = getConfKey("io.retryWait");
     SPARK_NETWORK_IO_LAZYFD_KEY = getConfKey("io.lazyFD");
+    SPRINGXML = conf.get("springXml");
+    ACTIONPATH = conf.get("actionPath");
   }
+
+  public String springXml(){
+    return SPRINGXML;
+  }
+
+  public String actionpath(){
+    return ACTIONPATH;
+  }
+
 
   private String getConfKey(String suffix) {
     return "spark." + module + "." + suffix;
