@@ -4,7 +4,7 @@ what i have done is to add http framework int the project
 
 You can use it like this :
 
-what u just need to do is : create a class like 
+what u just need to do is : create a class like :
 
 
 
@@ -18,14 +18,14 @@ import org.springframework.stereotype.Component;
 /**
  * Created by root on 16-8-22.
  */
-@Component
-@RequestMapping("mhy/get")
-public class Test {
-    @RequestMapping
-    public String test(HttpRequestKit request, HttpResponseKit response){
-        return request.getParams().toString();
+    @Component
+    @RequestMapping("mhy/get")
+    public class Test {
+        @RequestMapping
+        public String test(HttpRequestKit request, HttpResponseKit response){
+            return request.getParams().toString();
+        }
     }
-}
 
 
 Then create the server like this:
