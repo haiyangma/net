@@ -3,21 +3,20 @@ the project is based on netty framework from spark
 what i have done is to add http framework int the project
 
 You can use it like this :
+1: httpserver
+what u just need to do is : create a http handler like :
 
-what u just need to do is : create a class like :
 
 
+    package com.mhy.netty.action;
+    import com.mhy.netty.annotation.RequestMapping;
+    import com.mhy.netty.http.HttpRequestKit;
+    import com.mhy.netty.http.HttpResponseKit;
+    import org.springframework.stereotype.Component;
 
-package com.mhy.netty.action;
-
-import com.mhy.netty.annotation.RequestMapping;
-import com.mhy.netty.http.HttpRequestKit;
-import com.mhy.netty.http.HttpResponseKit;
-import org.springframework.stereotype.Component;
-
-/**
- * Created by root on 16-8-22.
- */
+    /**
+    * Created by root on 16-8-22.
+    */
     @Component
     @RequestMapping("mhy/get")
     public class Test {
@@ -26,7 +25,8 @@ import org.springframework.stereotype.Component;
             return request.getParams().toString();
         }
     }
-
+then it will handle the request like this :
+    http://10.13.89.31:56666/mhy/get/test?n=1&m=2
 
 Then create the server like this:
 
@@ -41,8 +41,8 @@ Then create the server like this:
         server.sync();
     }
     
-    
-    
+2 nettyrpc server    
+
 
     @Test
     public void createRpcServer() throws Exception{
