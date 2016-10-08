@@ -10,7 +10,8 @@ task "createDirs" << {
 
 repositories{
     mavenLocal()
-    maven{ url 'http://10.10.126.228:8081/nexus/content/groups/public'}
+    maven{ url 'http://maven.oschina.net/content/groups/public/'}
+//    maven{ url 'http://AWS.AmazFit.com:8081/artifactory/libs-release'}
 }
 
 ext{

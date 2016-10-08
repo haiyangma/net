@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Gradle: com.esotericsoftware.reflectasm:reflectasm:1.09">
-    <CLASSES>
-      <root url="jar://$USER_HOME$/.m2/repository/com/esotericsoftware/reflectasm/reflectasm/1.09/reflectasm-1.09.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

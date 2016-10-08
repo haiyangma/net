@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 @Component
 @RequestMapping("mhy/get")
 public class Test {
-    @RequestMapping
-    public String test(HttpRequestKit request, HttpResponseKit response){
+    @RequestMapping()
+    public String testDemo(HttpRequestKit request, HttpResponseKit response){
         return request.getParams().toString();
     }
 }

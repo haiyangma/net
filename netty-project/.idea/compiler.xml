@@ -19,8 +19,8 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="netty-project_main" target="1.7" />
-      <module name="netty-project_test" target="1.7" />
+      <module name="netty-project_main" target="1.8" />
+      <module name="netty-project_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

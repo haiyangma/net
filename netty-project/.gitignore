@@ -1,0 +1,12 @@
+**/target/
+**/.settings/
+**/.classpath
+**/.project
+dev/**/.gitignore
+**/.*.swp
+*.DS_Store*
+**/test-output/
+**/.metadata/
+**/catalina.base_IS_UNDEFINED/
+*.iml
+.idea/
