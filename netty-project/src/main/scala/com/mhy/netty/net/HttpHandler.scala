@@ -7,7 +7,6 @@ import com.esotericsoftware.reflectasm.MethodAccess
 import com.mhy.netty.client.{RpcResponseCallback, TransportClient}
 import com.mhy.netty.server.{OneForOneStreamManager, RpcHandler, StreamManager}
 import com.mhy.netty.util.PropertyUtil
-import com.typesafe.scalalogging.LazyLogging
 
 
 

@@ -4,13 +4,21 @@ import java.io.IOException
 
 import com.esotericsoftware.reflectasm.MethodAccess
 import com.mhy.netty.util.PropertyUtil
-import com.typesafe.scalalogging.LazyLogging
+import grizzled.slf4j.Logger
+import io.netty.buffer.Unpooled
+import io.netty.channel.{ChannelFutureListener, ChannelHandlerContext, ChannelInboundHandlerAdapter}
+import io.netty.handler.codec.http._
+import io.netty.handler.codec.http.multipart.{Attribute, HttpPostRequestDecoder, InterfaceHttpData}
+import io.netty.util.CharsetUtil
+
+import scala.collection.mutable
 
 
 /**
   * Created by root on 16-8-8.
   */
-class HttpServerHandler extends ChannelInboundHandlerAdapter  with LazyLogging{
+class HttpServerHandler extends ChannelInboundHandlerAdapter  {
+  val logger = Logger(classOf[HttpServerHandler])
   val propUtil:PropertyUtil = new PropertyUtil("app.properties")
 
 
@@ -24,7 +32,7 @@ class HttpServerHandler extends ChannelInboundHandlerAdapter  with LazyLogging{
     if(msg.isInstanceOf[HttpRequest] ){
       val request = msg.asInstanceOf[HttpRequest];
       if (request == null) return;
-      val map:Map[String,String] = packRequest(request);
+      val map:mutable.HashMap[String,String] = packRequest(request);
       val uri=request.getUri;
       map.put("uri", uri);
       map.put("HttpMethod", request.getMethod.name());
@@ -32,7 +40,7 @@ class HttpServerHandler extends ChannelInboundHandlerAdapter  with LazyLogging{
     }
   }
 
-  def processOneMessage( ctx:ChannelHandlerContext, request:HttpRequest ,  map:Map[String, String]):Unit= {
+  def processOneMessage( ctx:ChannelHandlerContext, request:HttpRequest ,  map:mutable.HashMap[String, String]):Unit= {
     // Decide whether to close the connection or not.
     val keepAlive = HttpHeaders.isKeepAlive(request);
 
@@ -60,7 +68,7 @@ class HttpServerHandler extends ChannelInboundHandlerAdapter  with LazyLogging{
   }
 
   @throws[Exception]
-  def callMethod( method:String,  map:Map[String, String]):Object = {
+  def callMethod( method:String,  map:mutable.HashMap[String, String]):Object = {
     return HttpServerHandler.access.invoke(HttpServerHandler.handler,HttpServerHandler.methodMap(method),map);
   }
 
@@ -69,14 +77,14 @@ class HttpServerHandler extends ChannelInboundHandlerAdapter  with LazyLogging{
     * @param request
     * @return
     */
-  def parseGetQueryString(request :HttpRequest) :Map[String, String]={
+  def parseGetQueryString(request :HttpRequest) :mutable.HashMap[String, String]={
     val decoder = new QueryStringDecoder(request.getUri);
-    return traversalGetDecoder(decoder, new HashMap[String,String]());
+    return traversalGetDecoder(decoder, new mutable.HashMap[String,String]());
   }
 
-  def parsePostQueryString( request : HttpRequest):Map[String, String]= {
+  def parsePostQueryString( request : HttpRequest):mutable.HashMap[String, String]= {
     val httpPostRequestDecoder = new HttpPostRequestDecoder(request);
-    return traversalPostDecoder(httpPostRequestDecoder, new HashMap[String,String]());
+    return traversalPostDecoder(httpPostRequestDecoder, new mutable.HashMap[String,String]());
   }
 
   /**
@@ -85,7 +93,7 @@ class HttpServerHandler extends ChannelInboundHandlerAdapter  with LazyLogging{
     * @param parameters
     * @return
     */
-  def traversalGetDecoder( decoder:QueryStringDecoder,  parameters:Map[String, String]):Map[String, String]={
+  def traversalGetDecoder( decoder:QueryStringDecoder,  parameters:mutable.HashMap[String, String]):mutable.HashMap[String, String]={
     val iterator = decoder.parameters().entrySet().iterator();
     while (iterator.hasNext()) {
       val entry = iterator.next();
@@ -94,7 +102,7 @@ class HttpServerHandler extends ChannelInboundHandlerAdapter  with LazyLogging{
     return parameters;
   }
 
-  def traversalPostDecoder(decoder:HttpPostRequestDecoder, parameters:Map[String, String]):Map[String, String]={
+  def traversalPostDecoder(decoder:HttpPostRequestDecoder, parameters:mutable.HashMap[String, String]):mutable.HashMap[String, String]={
     val params = decoder.getBodyHttpDatas();
     val iter = params.iterator();
     while(iter.hasNext){
@@ -118,8 +126,8 @@ class HttpServerHandler extends ChannelInboundHandlerAdapter  with LazyLogging{
     * @throws Exception
     */
   @throws[Exception]
-  def packRequest(request:HttpRequest) : Map[String,String]={
-    var map = Map[String, String]();
+  def packRequest(request:HttpRequest) : mutable.HashMap[String,String]={
+    var map = mutable.HashMap[String, String]();
     if(request.getMethod.equals(HttpMethod.GET)){
       map = parseGetQueryString(request);
     }else{

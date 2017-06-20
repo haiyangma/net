@@ -10,23 +10,32 @@ task "createDirs" << {
 
 repositories{
     mavenLocal()
-    maven{ url 'http://maven.oschina.net/content/groups/public/'}
+//    maven{ url 'http://maven.oschina.net/content/groups/public/'}
 //    maven{ url 'http://AWS.AmazFit.com:8081/artifactory/libs-release'}
+    maven{  url 'http://maven.aliyun.com/nexus/content/groups/public/'}
 }
 
 ext{
-    scala_version = "2.10.4"
+    scala_version = "2.12.2"
     spark_version = "1.6.2"
     spring_version = "3.2.3.RELEASE"
 }
 dependencies{
-    compileOnly "org.scala-lang:scala-compiler:2.11.8"
+    compile "org.scala-lang:scala-library:$scala_version"
+    compile "org.scala-lang:scala-compiler:$scala_version"
+    compile "org.scala-lang:scala-reflect:$scala_version"
+    testCompile "junit:junit:4.11"
     compile group: 'io.netty', name: 'netty-all', version: '4.0.29.Final'
     compile "org.ow2.asm:asm:5.0.3"
     compile "com.esotericsoftware.reflectasm:reflectasm:1.09"
+
     compile "org.slf4j:slf4j-api:1.7.12"
+    compile "org.slf4j:slf4j-simple:1.7.12"
     compile "ch.qos.logback:logback-classic:1.1.7"
-    compileOnly "com.typesafe.scala-logging:scala-logging_2.11:3.4.0"
+    compile "ch.qos.logback:logback-core:1.1.7"
+    compile "org.slf4j:log4j-over-slf4j:1.7.12"
+    compile "org.clapper:grizzled-slf4j_2.11:1.0.2"
+//    compileOnly "com.typesafe.scala-logging:scala-logging_2.11:3.4.0"
     compile "org.apache.commons:commons-lang3:3.1"
 
     compile "org.springframework:spring-core:$spring_version"
@@ -40,6 +49,8 @@ dependencies{
 //    compile "org.apache.spark:spark-streaming_2.10:$spark_version"
 //    compile "org.apache.spark:spark-streaming-kafka_2.10:$spark_version"
     testCompile "junit:junit:4.11"
+
+
 //    compile "org.json4s:json4s-native_2.10:3.2.10"
 //    compile "org.json4s:json4s-jackson_2.10:3.2.10"
 }
